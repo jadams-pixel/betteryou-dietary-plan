@@ -1,0 +1,27 @@
+
+{
+  "id": "./",
+  "name": "BetterYou",
+  "short_name": "BetterYou",
+  "description": "Your personal dietary plan and calorie calculator.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F1EC",
+  "theme_color": "#F7DCE5",
+  "icons": [
+    {
+      "src": "./betteryou-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./betteryou-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

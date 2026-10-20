@@ -1,0 +1,854 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dietary Plan | Honeyed Berry Parfait</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Playfair+Display:wght@600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --pink: #f7dce5;
+    --dark-pink: #c66b89;
+    --light-pink: #fff7fa;
+    --text: #563c46;
+    --white: #ffffff;
+    --border: #edc5d3;
+    --cream: #f7f1ec;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 20px 12px 40px;
+    background: var(--light-pink);
+    color: var(--text);
+    font-family: 'Patrick Hand', cursive;
+    font-size: 18px;
+}
+
+/* =================================
+   MINIMALIST LOADING INTRO
+================================= */
+
+#intro-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#intro-screen.intro-exit {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loader-design {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: loaderBreath 1.4s ease-in-out infinite;
+}
+
+.loader-circle {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+.circle-one {
+    background: #c6a78c;
+    transform: translate(-20px, -10px);
+    animation: floatOne 1.4s ease-in-out infinite;
+}
+
+.circle-two {
+    background: #89977c;
+    transform: translate(17px, -15px);
+    animation: floatTwo 1.4s ease-in-out infinite;
+}
+
+.circle-three {
+    background: #d9b8a7;
+    transform: translate(7px, 20px);
+    animation: floatThree 1.4s ease-in-out infinite;
+}
+
+.loader-center {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #a68a76;
+}
+
+/* Keep website hidden during intro */
+body.intro-active .container {
+    opacity: 0;
+    transform: translateY(40px);
+}
+
+/* Reveal website from bottom to top */
+body.site-revealed .container {
+    animation: websiteRise 3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes websiteRise {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes loaderBreath {
+    0%, 100% {
+        transform: scale(0.94);
+    }
+
+    50% {
+        transform: scale(1.06);
+    }
+}
+
+@keyframes floatOne {
+    0%, 100% {
+        transform: translate(-20px, -10px);
+    }
+
+    50% {
+        transform: translate(-24px, -15px);
+    }
+}
+
+@keyframes floatTwo {
+    0%, 100% {
+        transform: translate(17px, -15px);
+    }
+
+    50% {
+        transform: translate(23px, -11px);
+    }
+}
+
+@keyframes floatThree {
+    0%, 100% {
+        transform: translate(7px, 20px);
+    }
+
+    50% {
+        transform: translate(3px, 25px);
+    }
+}
+
+/* =================================
+   MAIN WEBSITE DESIGN
+================================= */
+
+.container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px;
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: 22px;
+    box-shadow: 0 8px 25px rgba(198, 107, 137, 0.12);
+}
+
+.top-label {
+    margin: 0 0 8px;
+    color: var(--dark-pink);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 14px;
+}
+
+h1 {
+    margin: 0;
+    color: var(--text);
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 7vw, 42px);
+    line-height: 1.2;
+    text-align: center;
+}
+
+.subtitle {
+    margin: 10px 0 24px;
+    color: var(--dark-pink);
+    font-family: 'Dancing Script', cursive;
+    font-size: 26px;
+    text-align: center;
+}
+
+/* Breakfast photograph */
+
+.photo-frame {
+    width: 100%;
+    height: 280px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    border: 4px solid var(--pink);
+    border-radius: 18px;
+    background: var(--pink);
+}
+
+.photo-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+h2 {
+    margin: 24px 0 12px;
+    padding-bottom: 7px;
+    border-bottom: 2px solid var(--pink);
+    color: var(--dark-pink);
+    font-family: 'Playfair Display', serif;
+    font-size: 23px;
+}
+
+.description {
+    line-height: 1.6;
+}
+
+.ingredients-list {
+    padding-left: 24px;
+    line-height: 1.8;
+}
+
+.ingredients-list li::marker {
+    color: var(--dark-pink);
+}
+
+.note {
+    margin-top: 12px;
+    padding: 12px 15px;
+    border-left: 4px solid var(--dark-pink);
+    border-radius: 8px;
+    background: var(--light-pink);
+    font-size: 16px;
+}
+
+/* =================================
+   CALORIE CALCULATOR
+================================= */
+
+.calculator {
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: #fffafd;
+}
+
+.calculator-intro {
+    margin-top: 0;
+    line-height: 1.5;
+}
+
+.ingredient-head,
+.ingredient {
+    display: grid;
+    grid-template-columns:
+        minmax(90px, 1.4fr)
+        minmax(75px, 1fr)
+        minmax(60px, 0.8fr)
+        minmax(65px, 0.8fr)
+        32px;
+    gap: 7px;
+    align-items: center;
+}
+
+.ingredient-head {
+    margin: 18px 0 8px;
+    color: var(--dark-pink);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.ingredient {
+    margin-bottom: 9px;
+}
+
+.ingredient input {
+    width: 100%;
+    min-width: 0;
+    padding: 9px 6px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    color: var(--text);
+    font-family: 'Patrick Hand', cursive;
+    font-size: 16px;
+}
+
+.ingredient input:focus {
+    outline: 2px solid var(--pink);
+    border-color: var(--dark-pink);
+}
+
+.ingredient input:read-only {
+    background: #f9e5ec;
+    color: #8f5268;
+    cursor: not-allowed;
+}
+
+.ingredient-calories {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.remove-btn {
+    width: 30px;
+    height: 34px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: #f9e5ec;
+    color: #a84464;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.action-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 11px 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--dark-pink);
+    color: white;
+    font-family: 'Patrick Hand', cursive;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.action-btn.secondary {
+    background: #f5e2e9;
+    color: var(--text);
+}
+
+.action-btn:hover,
+.remove-btn:hover {
+    opacity: 0.85;
+}
+
+.total-box {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 12px;
+    background: var(--pink);
+    text-align: center;
+}
+
+.total-label {
+    margin: 0;
+    font-size: 17px;
+}
+
+.total-number {
+    margin: 4px 0;
+    color: var(--dark-pink);
+    font-family: 'Playfair Display', serif;
+    font-size: 34px;
+    font-weight: bold;
+}
+
+.total-kj {
+    margin: 0;
+    font-size: 15px;
+}
+
+.footer {
+    margin-top: 25px;
+    color: var(--dark-pink);
+    font-family: 'Dancing Script', cursive;
+    font-size: 22px;
+    text-align: center;
+}
+
+/* =================================
+   MOBILE RESPONSIVENESS
+================================= */
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px 8px 28px;
+    }
+
+    .container {
+        padding: 15px 11px;
+    }
+
+    .photo-frame {
+        height: 230px;
+    }
+
+    .calculator {
+        padding: 10px 7px;
+    }
+
+    .ingredient-head,
+    .ingredient {
+        grid-template-columns:
+            minmax(65px, 1.2fr)
+            minmax(58px, 1fr)
+            minmax(43px, 0.75fr)
+            minmax(48px, 0.8fr)
+            25px;
+        gap: 4px;
+    }
+
+    .ingredient-head {
+        font-size: 12px;
+    }
+
+    .ingredient input {
+        padding: 8px 3px;
+        font-size: 14px;
+    }
+
+    .ingredient-calories {
+        font-size: 13px;
+    }
+
+    .remove-btn {
+        width: 25px;
+    }
+}
+
+/* Accessibility: reduce animation if requested */
+@media (prefers-reduced-motion: reduce) {
+    .loader-design,
+    .loader-circle {
+        animation: none !important;
+    }
+
+    body.site-revealed .container {
+        animation-duration: 0.01ms;
+    }
+
+    #intro-screen {
+        transition-duration: 0.01ms;
+    }
+}
+</style>
+</head>
+
+<body class="intro-active">
+
+<!-- =================================
+     LOADING SCREEN - NO TEXT
+================================= -->
+
+<div id="intro-screen" aria-hidden="true">
+    <div class="loader-design">
+        <span class="loader-circle circle-one"></span>
+        <span class="loader-circle circle-two"></span>
+        <span class="loader-circle circle-three"></span>
+        <span class="loader-center"></span>
+    </div>
+</div>
+
+<!-- =================================
+     WEBSITE CONTENT
+================================= -->
+
+<main class="container">
+
+    <p class="top-label">Day 1 · Breakfast</p>
+
+    <h1>Honeyed Berry Parfait</h1>
+
+    <p class="subtitle">A sweet little start to your day</p>
+
+    <!-- BREAKFAST PHOTO
+         Keep day1-breakfast.jpg in the same folder
+         as index.html.
+    -->
+
+    <div class="photo-frame">
+        <img
+            src="./day1-breakfast.jpg"
+            alt="Honeyed berry parfait made with yoghurt, honey and blueberries"
+        >
+    </div>
+
+    <section>
+        <h2>About This Dish</h2>
+
+        <p class="description">
+            Creamy yoghurt layered with juicy blueberries and a delicate
+            drizzle of golden honey. This simple, refreshing parfait is a
+            lovely way to begin your morning.
+        </p>
+    </section>
+
+    <section>
+        <h2>Ingredients</h2>
+
+        <ul class="ingredients-list">
+            <li>Yoghurt</li>
+            <li>Honey</li>
+            <li>Blueberries</li>
+        </ul>
+
+        <p class="note">
+            Tip: Layer the yoghurt and blueberries in a glass, then drizzle
+            honey over the top. Adjust the quantities to suit your taste.
+        </p>
+    </section>
+
+    <section>
+        <h2>Calorie Calculator</h2>
+
+        <p class="calculator-intro">
+            Enter the energy value shown on the food packaging in
+            <strong>kJ per 100 g</strong> and the amount you use in grams.
+            The calculator automatically converts the energy to
+            <strong>kcal</strong>.
+        </p>
+
+        <div class="calculator">
+
+            <div class="ingredient-head">
+                <span>Ingredient</span>
+                <span>kJ / 100 g</span>
+                <span>Grams</span>
+                <span>kcal</span>
+                <span></span>
+            </div>
+
+            <div id="ingredient-list"></div>
+
+            <div class="buttons">
+                <button
+                    class="action-btn"
+                    id="add-btn"
+                    type="button">
+                    + Add Ingredient
+                </button>
+
+                <button
+                    class="action-btn secondary"
+                    id="reset-btn"
+                    type="button">
+                    Reset
+                </button>
+            </div>
+
+            <div class="total-box">
+                <p class="total-label">Total Energy</p>
+
+                <p class="total-number">
+                    <span id="total-kcal">0.0</span> kcal
+                </p>
+
+                <p class="total-kj">
+                    Approximately
+                    <span id="total-kj">0.0</span> kJ
+                </p>
+            </div>
+
+            <p class="note">
+                Blueberries use a fixed reference value of 240 kJ per
+                100 g for fresh blueberries. Yoghurt and honey use the
+                values you enter from their packaging. Nutrition values
+                can vary by brand and product.
+            </p>
+
+        </div>
+    </section>
+
+    <p class="footer">Made with a little sweetness ♡</p>
+
+</main>
+
+<!-- =================================
+     CALCULATOR + INTRO JAVASCRIPT
+================================= -->
+
+<script>
+const BLUEBERRY_KJ_PER_100G = 240;
+
+const initialIngredients = [
+    { name: "Yoghurt", kj: "", grams: "150" },
+    { name: "Honey", kj: "", grams: "10" },
+    {
+        name: "Blueberries",
+        kj: String(BLUEBERRY_KJ_PER_100G),
+        grams: "50"
+    }
+];
+
+const ingredientList = document.getElementById("ingredient-list");
+const totalKcalDisplay = document.getElementById("total-kcal");
+const totalKjDisplay = document.getElementById("total-kj");
+
+/* Create an ingredient row */
+
+function createIngredient(name = "", kj = "", grams = "") {
+    const row = document.createElement("div");
+    row.className = "ingredient";
+
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.className = "ingredient-name";
+    nameInput.placeholder = "Food name";
+    nameInput.setAttribute("aria-label", "Ingredient name");
+    nameInput.value = name;
+
+    const kjInput = document.createElement("input");
+    kjInput.type = "number";
+    kjInput.className = "kj-input";
+    kjInput.placeholder = "kJ";
+    kjInput.min = "0";
+    kjInput.max = "100000";
+    kjInput.step = "any";
+    kjInput.setAttribute(
+        "aria-label",
+        "Kilojoules per 100 grams"
+    );
+    kjInput.value = kj;
+
+    const gramsInput = document.createElement("input");
+    gramsInput.type = "number";
+    gramsInput.className = "grams";
+    gramsInput.placeholder = "g";
+    gramsInput.min = "0";
+    gramsInput.max = "100000";
+    gramsInput.step = "any";
+    gramsInput.setAttribute(
+        "aria-label",
+        "Ingredient amount in grams"
+    );
+    gramsInput.value = grams;
+
+    const caloriesDisplay = document.createElement("span");
+    caloriesDisplay.className = "ingredient-calories";
+    caloriesDisplay.textContent = "0.0";
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "remove-btn";
+    removeButton.textContent = "×";
+    removeButton.setAttribute(
+        "aria-label",
+        "Remove ingredient"
+    );
+
+    /*
+      If the ingredient is named blueberries,
+      automatically apply the fixed kJ value.
+    */
+
+    function updateBlueberryRule() {
+        const isBlueberry =
+            nameInput.value.trim().toLowerCase() === "blueberries";
+
+        if (isBlueberry) {
+            kjInput.value = String(BLUEBERRY_KJ_PER_100G);
+            kjInput.readOnly = true;
+            kjInput.title =
+                "Fixed value: 240 kJ per 100 g";
+        } else {
+            kjInput.readOnly = false;
+            kjInput.title = "";
+        }
+
+        kjInput.style.background = isBlueberry
+            ? "#f9e5ec"
+            : "white";
+
+        kjInput.style.cursor = isBlueberry
+            ? "not-allowed"
+            : "text";
+
+        calculateCalories();
+    }
+
+    nameInput.addEventListener("input", updateBlueberryRule);
+
+    kjInput.addEventListener("input", calculateCalories);
+    gramsInput.addEventListener("input", calculateCalories);
+
+    removeButton.addEventListener("click", function () {
+        row.remove();
+        calculateCalories();
+    });
+
+    row.append(
+        nameInput,
+        kjInput,
+        gramsInput,
+        caloriesDisplay,
+        removeButton
+    );
+
+    ingredientList.appendChild(row);
+
+    updateBlueberryRule();
+}
+
+/* Calculate kcal and total kJ */
+
+function calculateCalories() {
+    let totalKcal = 0;
+
+    const rows = document.querySelectorAll(".ingredient");
+
+    rows.forEach(function (row) {
+        const nameInput = row.querySelector(".ingredient-name");
+        const kjInput = row.querySelector(".kj-input");
+        const gramsInput = row.querySelector(".grams");
+        const caloriesDisplay =
+            row.querySelector(".ingredient-calories");
+
+        const isBlueberry =
+            nameInput.value.trim().toLowerCase() === "blueberries";
+
+        let kjPer100g = Number(kjInput.value);
+
+        /*
+          Always use the fixed blueberry value,
+          even if someone tries to edit the field.
+        */
+
+        if (isBlueberry) {
+            kjPer100g = BLUEBERRY_KJ_PER_100G;
+            kjInput.value = String(BLUEBERRY_KJ_PER_100G);
+        }
+
+        const grams = Number(gramsInput.value);
+
+        const validKj =
+            kjInput.value.trim() !== "" &&
+            Number.isFinite(kjPer100g) &&
+            kjPer100g >= 0 &&
+            kjPer100g <= 100000;
+
+        const validGrams =
+            gramsInput.value.trim() !== "" &&
+            Number.isFinite(grams) &&
+            grams >= 0 &&
+            grams <= 100000;
+
+        let ingredientKcal = 0;
+
+        if (validKj && validGrams) {
+            ingredientKcal =
+                (kjPer100g / 4.184) * (grams / 100);
+        }
+
+        caloriesDisplay.textContent =
+            ingredientKcal.toFixed(1);
+
+        totalKcal += ingredientKcal;
+    });
+
+    totalKcalDisplay.textContent = totalKcal.toFixed(1);
+
+    totalKjDisplay.textContent =
+        (totalKcal * 4.184).toFixed(1);
+}
+
+/* Add a blank ingredient */
+
+document.getElementById("add-btn").addEventListener(
+    "click",
+    function () {
+        createIngredient();
+    }
+);
+
+/* Reset ingredients to the original amounts */
+
+document.getElementById("reset-btn").addEventListener(
+    "click",
+    function () {
+        ingredientList.innerHTML = "";
+
+        initialIngredients.forEach(function (ingredient) {
+            createIngredient(
+                ingredient.name,
+                ingredient.kj,
+                ingredient.grams
+            );
+        });
+
+        calculateCalories();
+    }
+);
+
+/* Load the default ingredients */
+
+initialIngredients.forEach(function (ingredient) {
+    createIngredient(
+        ingredient.name,
+        ingredient.kj,
+        ingredient.grams
+    );
+});
+
+/* =================================
+   INTRO TIMING
+================================= */
+
+window.addEventListener("load", function () {
+    const intro = document.getElementById("intro-screen");
+    const body = document.body;
+
+    // Show the loading animation for 2 seconds.
+    setTimeout(function () {
+        intro.classList.add("intro-exit");
+
+        // Start the 3-second website reveal.
+        body.classList.remove("intro-active");
+        body.classList.add("site-revealed");
+
+        // Remove the loading screen after its fade-out.
+        setTimeout(function () {
+            intro.remove();
+        }, 550);
+
+    }, 2000);
+});
+</script>
+
+</body>
+</html>
