@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F7DCE5">
+<meta name="description" content="Your personalised BetterYou dietary plan.">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./betteryou-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./betteryou-192.png">
+<title>BetterYou | Honeyed Berry Parfait</title>
+<!-- Background image title: Soft Pastel Dreams — BetterYou Background -->
+
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Playfair+Display:wght@600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+
+<style>
+/* =================================
+   BETTERYOU THEME VARIABLES
+================================= */
+:root {
+    --app-pastel: #F7DCE5;
+    --app-pastel-light: #FFF5F8;
+    --app-pastel-dark: #B85F7D;
+    --app-text: #59434D;
+    --app-font: 'Patrick Hand', cursive;
+    --pink: var(--app-pastel);
+    --dark-pink: var(--app-pastel-dark);
+    --light-pink: var(--app-pastel-light);
+    --text: var(--app-text);
+    --white: #FFFFFF;
+    --border: var(--app-pastel-dark);
+    --cream: var(--app-pastel-light);
+}
+
+* { box-sizing: border-box; }
+
+html {
+    scroll-behavior: smooth;
+    background: var(--app-pastel-light);
+}
+
+body {
+    margin: 0;
+    padding: 20px 12px 40px;
+    /* The pastel colour remains as a fallback if the image is not uploaded. */
+    background-color: var(--app-pastel-light);
+    /* Put your image named betteryou-background.jpg beside index.html.
+       The translucent white layer keeps the soft texture from overpowering text. */
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.56)),
+        url("./betteryou-background.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: var(--app-text);
+    font-family: var(--app-font);
+    font-size: 18px;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* =================================
+   INTRO LOADER
+================================= */
+#intro-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--app-pastel-light);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#intro-screen.intro-exit {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loader-design {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: loaderBreath 1.4s ease-in-out infinite;
+}
+
+.loader-circle {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+.circle-one {
+    background: #C6A78C;
+    transform: translate(-20px, -10px);
+    animation: floatOne 1.4s ease-in-out infinite;
+}
+.circle-two {
+    background: #89977C;
+    transform: translate(17px, -15px);
+    animation: floatTwo 1.4s ease-in-out infinite;
+}
+.circle-three {
+    background: #D9B8A7;
+    transform: translate(7px, 20px);
+    animation: floatThree 1.4s ease-in-out infinite;
+}
+.loader-center {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #A68A76;
+}
+
+body.intro-active .container,
+body.intro-active .personalisation-screen {
+    opacity: 0;
+    transform: translateY(24px);
+}
+
+body.site-revealed .container,
+body.site-revealed .personalisation-screen {
+    animation: websiteRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes websiteRise {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes loaderBreath {
+    0%, 100% { transform: scale(0.94); }
+    50% { transform: scale(1.06); }
+}
+@keyframes floatOne {
+    0%, 100% { transform: translate(-20px, -10px); }
+    50% { transform: translate(-24px, -15px); }
+}
+@keyframes floatTwo {
+    0%, 100% { transform: translate(17px, -15px); }
+    50% { transform: translate(23px, -11px); }
+}
+@keyframes floatThree {
+    0%, 100% { transform: translate(7px, 20px); }
+    50% { transform: translate(3px, 25px); }
+}
+
+/* =================================
+   MAIN WEBSITE
+================================= */
+.container {
+    max-width: 760px;
+    margin: 20px auto;
+    padding: 24px;
+    /* Slight transparency lets the soft pastel background show through gently. */
+    background: rgba(255, 255, 255, 0.90);
+    border: 2px solid var(--app-pastel);
+    border-radius: 22px;
+    box-shadow: 0 8px 25px rgba(70, 40, 55, 0.10);
+}
+
+.top-label {
+    margin: 0 0 8px;
+    color: var(--app-pastel-dark);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 14px;
+}
+h1 {
+    margin: 0;
+    color: var(--app-text);
+    font-family: var(--app-font);
+    font-size: clamp(28px, 7vw, 42px);
+    line-height: 1.2;
+    text-align: center;
+}
+.subtitle {
+    margin: 10px 0 24px;
+    color: var(--app-pastel-dark);
+    font-family: var(--app-font);
+    font-size: 26px;
+    text-align: center;
+}
+.photo-frame {
+    width: 100%;
+    height: 280px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    border: 4px solid var(--app-pastel);
+    border-radius: 18px;
+    background: var(--app-pastel-light);
+}
+.photo-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+h2 {
+    margin: 24px 0 12px;
+    padding-bottom: 7px;
+    border-bottom: 2px solid var(--app-pastel);
+    color: var(--app-pastel-dark);
+    font-family: var(--app-font);
+    font-size: 23px;
+}
+.description { line-height: 1.6; }
+.ingredients-list {
+    padding-left: 24px;
+    line-height: 1.8;
+}
+.ingredients-list li::marker { color: var(--app-pastel-dark); }
+.note {
+    margin-top: 12px;
+    padding: 12px 15px;
+    border-left: 4px solid var(--app-pastel-dark);
+    border-radius: 8px;
+    background: var(--app-pastel-light);
+    font-size: 16px;
+}
+
+/* =================================
+   CALORIE CALCULATOR
+================================= */
+.calculator {
+    margin-top: 18px;
+    padding: 16px;
+    border: 1px solid var(--app-pastel);
+    border-radius: 15px;
+    background: var(--app-pastel-light);
+}
+.calculator-intro { margin-top: 0; line-height: 1.5; }
+.ingredient-head,
+.ingredient {
+    display: grid;
+    grid-template-columns:
+        minmax(90px, 1.4fr)
+        minmax(75px, 1fr)
+        minmax(60px, 0.8fr)
+        minmax(65px, 0.8fr)
+        32px;
+    gap: 7px;
+    align-items: center;
+}
+.ingredient-head {
+    margin: 18px 0 8px;
+    color: var(--app-pastel-dark);
+    font-size: 14px;
+    font-weight: bold;
+}
+.ingredient { margin-bottom: 9px; }
+.ingredient input {
+    width: 100%;
+    min-width: 0;
+    padding: 9px 6px;
+    border: 1px solid var(--app-pastel);
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: var(--app-text);
+    font-family: var(--app-font);
+    font-size: 16px;
+}
+.ingredient input:focus {
+    outline: 2px solid var(--app-pastel);
+    border-color: var(--app-pastel-dark);
+}
+.ingredient input:read-only {
+    background: var(--app-pastel-light);
+    color: var(--app-text);
+    cursor: not-allowed;
+}
+.ingredient-calories {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+.remove-btn {
+    width: 30px;
+    height: 34px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: var(--app-pastel-light);
+    color: var(--app-text);
+    font-size: 20px;
+    cursor: pointer;
+}
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+.action-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 11px 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--app-pastel-dark);
+    color: #FFFFFF;
+    font-family: var(--app-font);
+    font-size: 17px;
+    cursor: pointer;
+}
+.action-btn.secondary {
+    background: var(--app-pastel-light);
+    color: var(--app-text);
+}
+.action-btn:hover, .remove-btn:hover { opacity: 0.85; }
+.total-box {
+    margin-top: 18px;
+    padding: 15px;
+    border: 1px solid var(--app-pastel);
+    border-radius: 12px;
+    background: var(--app-pastel-light);
+    text-align: center;
+}
+.total-label { margin: 0; font-size: 17px; }
+.total-number {
+    margin: 4px 0;
+    color: var(--app-pastel-dark);
+    font-family: var(--app-font);
+    font-size: 34px;
+    font-weight: bold;
+}
+.total-kj { margin: 0; font-size: 15px; }
+.footer {
+    margin-top: 25px;
+    color: var(--app-pastel-dark);
+    font-family: var(--app-font);
+    font-size: 22px;
+    text-align: center;
+}
+
+/* =================================
+   PERSONALISATION SCREEN
+================================= */
+.personalisation-screen {
+    width: 100%;
+    max-width: 480px;
+    margin: 20px auto;
+    padding: 28px 20px;
+    border: 2px solid var(--app-pastel);
+    border-radius: 24px;
+    /* Follow the selected theme instead of staying permanently blush pink. */
+    background: var(--app-pastel-light);
+    color: var(--app-text);
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(70, 40, 55, 0.10);
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+.personalisation-screen h2 {
+    margin-top: 0;
+    padding: 0;
+    border: none;
+    font-size: 27px;
+}
+.personalisation-screen p { line-height: 1.6; }
+#user-name {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin: 14px 0;
+    border: 1px solid var(--app-pastel-dark);
+    border-radius: 14px;
+    background: #FFFFFF;
+    color: var(--app-text);
+    font: inherit;
+}
+.pastel-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+    text-align: left;
+}
+.pastel-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: #FFFFFF;
+    cursor: pointer;
+    font-size: 14px;
+}
+.pastel-option:has(input:checked) {
+    border-color: var(--app-pastel-dark);
+}
+.pastel-option input {
+    width: auto;
+    margin: 0;
+    accent-color: var(--app-pastel-dark);
+}
+.pastel-swatch {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.font-options {
+    display: grid;
+    gap: 9px;
+    margin: 12px 0 20px;
+    text-align: left;
+}
+.font-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: #FFFFFF;
+    cursor: pointer;
+    font-size: 16px;
+}
+.font-option:has(input:checked) { border-color: var(--app-pastel-dark); }
+.font-option input { margin: 0; accent-color: var(--app-pastel-dark); }
+
+.personalise-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 16px;
+    background: var(--app-pastel-dark);
+    color: #FFFFFF;
+    font-family: var(--app-font);
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.sidebar-profile {
+    margin-bottom: 20px;
+    color: var(--app-pastel-dark);
+    text-align: center;
+    font-size: 16px;
+}
+#sidebar-user-name {
+    display: block;
+    overflow-wrap: anywhere;
+    color: var(--app-text);
+    font-family: var(--app-font);
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.change-personalisation-button {
+    display: block;
+    max-width: 300px;
+    width: 100%;
+    margin: 14px auto 0;
+    padding: 10px 14px;
+    border: 1px solid var(--app-pastel-dark);
+    border-radius: 14px;
+    background: var(--app-pastel-light);
+    color: var(--app-text);
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+.change-personalisation-button:focus-visible {
+    outline: 3px solid var(--app-pastel-dark);
+    outline-offset: 3px;
+}
+
+/* =================================
+   MOBILE RESPONSIVENESS
+================================= */
+@media (max-width: 480px) {
+    body { padding: 12px 8px 28px; }
+    .container, .personalisation-screen { padding: 15px 11px; }
+    .photo-frame { height: 230px; }
+    .calculator { padding: 10px 7px; }
+    .ingredient-head, .ingredient {
+        grid-template-columns:
+            minmax(65px, 1.2fr)
+            minmax(58px, 1fr)
+            minmax(43px, 0.75fr)
+            minmax(48px, 0.8fr)
+            25px;
+        gap: 4px;
+    }
+    .ingredient-head { font-size: 12px; }
+    .ingredient input { padding: 8px 3px; font-size: 14px; }
+    .ingredient-calories { font-size: 13px; }
+    .remove-btn { width: 25px; }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .loader-design, .loader-circle { animation: none !important; }
+    body.site-revealed .container,
+    body.site-revealed .personalisation-screen { animation-duration: 0.01ms; }
+    #intro-screen { transition-duration: 0.01ms; }
+}
+</style>
+</head>
+
+<body class="intro-active">
+
+<!-- INTRO LOADING SCREEN -->
+<div id="intro-screen" aria-hidden="true">
+    <div class="loader-design">
+        <span class="loader-circle circle-one"></span>
+        <span class="loader-circle circle-two"></span>
+        <span class="loader-circle circle-three"></span>
+        <span class="loader-center"></span>
+    </div>
+</div>
+
+<!-- FIRST-TIME PERSONALISATION -->
+<section id="personalisation-screen" class="personalisation-screen" hidden>
+    <h2>Let's make BetterYou yours ♡</h2>
+    <p>First, what should we call you?</p>
+
+    <form id="personalisation-form">
+        <input
+            type="text"
+            id="user-name"
+            placeholder="Enter your name"
+            maxlength="30"
+            autocomplete="given-name"
+            required
+        >
+
+        <p>Choose your favourite pastel colour 🌷</p>
+
+        <div class="pastel-options">
+            <label class="pastel-option">
+                <input type="radio" name="pastel" value="pink" checked>
+                <span class="pastel-swatch" style="background:#F7DCE5"></span>
+                Blush Pink
+            </label>
+            <label class="pastel-option">
+                <input type="radio" name="pastel" value="lavender">
+                <span class="pastel-swatch" style="background:#E8DDF5"></span>
+                Lavender
+            </label>
+            <label class="pastel-option">
+                <input type="radio" name="pastel" value="mint">
+                <span class="pastel-swatch" style="background:#DDF1E4"></span>
+                Mint Green
+            </label>
+            <label class="pastel-option">
+                <input type="radio" name="pastel" value="blue">
+                <span class="pastel-swatch" style="background:#DDECF9"></span>
+                Baby Blue
+            </label>
+            <label class="pastel-option">
+                <input type="radio" name="pastel" value="yellow">
+                <span class="pastel-swatch" style="background:#FFF0C9"></span>
+                Butter Yellow
+            </label>
+            <label class="pastel-option">
+                <input type="radio" name="pastel" value="peach">
+                <span class="pastel-swatch" style="background:#F9DFD5"></span>
+                Peach
+            </label>
+            <label class="pastel-option">
+                <input type="radio" name="pastel" value="sage">
+                <span class="pastel-swatch" style="background:#E8E8C9"></span>
+                Pastel Sage
+            </label>
+            <label class="pastel-option">
+                <input type="radio" name="pastel" value="mauve">
+                <span class="pastel-swatch" style="background:#F1DCEB"></span>
+                Soft Mauve
+            </label>
+        </div>
+
+        <p>Choose your website font ✨</p>
+        <div class="font-options">
+            <label class="font-option">
+                <input type="radio" name="site-font" value="patrick" checked>
+                <span style="font-family:'Patrick Hand',cursive">Playful handwritten</span>
+            </label>
+            <label class="font-option">
+                <input type="radio" name="site-font" value="playfair">
+                <span style="font-family:'Playfair Display',serif">Elegant classic</span>
+            </label>
+            <label class="font-option">
+                <input type="radio" name="site-font" value="dancing">
+                <span style="font-family:'Dancing Script',cursive">Soft script</span>
+            </label>
+        </div>
+
+        <button type="submit" class="personalise-button">
+            Personalise my BetterYou ♡
+        </button>
+    </form>
+</section>
+
+<!-- MAIN WEBSITE -->
+<main class="container" id="main-content" hidden>
+    <div class="sidebar-profile">
+        <span>Welcome,</span>
+        <span id="sidebar-user-name">Beautiful soul ♡</span>
+        <button type="button" id="change-personalisation" class="change-personalisation-button">Change my name or website colour ✿</button>
+    </div>
+
+    <p class="top-label">Day 1 · Breakfast</p>
+    <h1>Honeyed Berry Parfait</h1>
+    <p class="subtitle">A sweet little start to your day</p>
+
+    <div class="photo-frame">
+        <img
+            src="./day1-breakfast.jpg"
+            alt="Honeyed berry parfait made with yoghurt, honey and blueberries"
+        >
+    </div>
+
+    <section>
+        <h2>About This Dish</h2>
+        <p class="description">
+            Creamy yoghurt layered with juicy blueberries and a delicate
+            drizzle of golden honey. This simple, refreshing parfait is a
+            lovely way to begin your morning.
+        </p>
+    </section>
+
+    <section>
+        <h2>Ingredients</h2>
+        <ul class="ingredients-list">
+            <li>Yoghurt</li>
+            <li>Honey</li>
+            <li>Blueberries</li>
+        </ul>
+        <p class="note">
+            Tip: Layer the yoghurt and blueberries in a glass, then drizzle
+            honey over the top. Adjust the quantities to suit your taste.
+        </p>
+    </section>
+
+    <section>
+        <h2>Calorie Calculator</h2>
+        <p class="calculator-intro">
+            Enter the energy value shown on the food packaging in
+            <strong>kJ per 100 g</strong> and the amount you use in grams.
+            The calculator automatically converts the energy to
+            <strong>kcal</strong>.
+        </p>
+
+        <div class="calculator">
+            <div class="ingredient-head">
+                <span>Ingredient</span>
+                <span>kJ / 100 g</span>
+                <span>Grams</span>
+                <span>kcal</span>
+                <span></span>
+            </div>
+
+            <div id="ingredient-list"></div>
+
+            <div class="buttons">
+                <button class="action-btn" id="add-btn" type="button">
+                    + Add Ingredient
+                </button>
+                <button class="action-btn secondary" id="reset-btn" type="button">
+                    Reset
+                </button>
+            </div>
+
+            <div class="total-box">
+                <p class="total-label">Total Energy</p>
+                <p class="total-number"><span id="total-kcal">0.0</span> kcal</p>
+                <p class="total-kj">
+                    Approximately <span id="total-kj">0.0</span> kJ
+                </p>
+            </div>
+
+            <p class="note">
+                Blueberries use a fixed reference value of 240 kJ per
+                100 g for fresh blueberries. Yoghurt and honey use the
+                values you enter from their packaging. Nutrition values
+                can vary by brand and product.
+            </p>
+        </div>
+    </section>
+
+    <p class="footer">Made with a little sweetness ♡</p>
+</main>
+
+<script>
+/* =================================
+   THEME DEFINITIONS
+================================= */
+const pastelThemes = {
+    pink: {
+        main: "#F7DCE5",
+        light: "#FFF5F8",
+        dark: "#B85F7D",
+        text: "#59434D"
+    },
+    lavender: {
+        main: "#E8DDF5",
+        light: "#FAF6FF",
+        dark: "#80649F",
+        text: "#493D56"
+    },
+    mint: {
+        main: "#DDF1E4",
+        light: "#F4FBF6",
+      dark: "#57866A",
+        text: "#354B3D"
+    },
+    blue: {
+        main: "#DDECF9",
+        light: "#F3F8FE",
+        dark: "#557FA8",
+        text: "#34495E"
+    },
+    yellow: {
+        main: "#FFF0C9",
+        light: "#FFFBED",
+        dark: "#A18135",
+        text: "#55482B"
+    },
+    peach: {
+        main: "#F9DFD5",
+        light: "#FFF6F2",
+        dark: "#B96F59",
+        text: "#594139"
+    },
+    sage: {
+        main: "#E8E8C9",
+        light: "#FAFAF0",
+        dark: "#7A8050",
+        text: "#454832"
+    },
+    mauve: {
+        main: "#F1DCEB",
+        light: "#FDF5FA",
+        dark: "#A3658D",
+        text: "#553F4E"
+    }
+};
+
+const setupScreen = document.getElementById("personalisation-screen");
+const setupForm = document.getElementById("personalisation-form");
+const nameInput = document.getElementById("user-name");
+const sidebarName = document.getElementById("sidebar-user-name");
+const mainContent = document.getElementById("main-content");
+const introScreen = document.getElementById("intro-screen");
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+const siteFonts = {
+    patrick: "'Patrick Hand', cursive",
+    playfair: "'Playfair Display', serif",
+    dancing: "'Dancing Script', cursive"
+};
+
+function applyFont(fontKey) {
+    const validFont = siteFonts[fontKey] ? fontKey : "patrick";
+    document.documentElement.style.setProperty("--app-font", siteFonts[validFont]);
+}
+
+function applyColour(themeKey) {
+    const theme = pastelThemes[themeKey] || pastelThemes.pink;
+    const root = document.documentElement;
+
+    root.style.setProperty("--app-pastel", theme.main);
+    root.style.setProperty("--app-pastel-light", theme.light);
+    root.style.setProperty("--app-pastel-dark", theme.dark);
+    root.style.setProperty("--app-text", theme.text);
+
+    if (themeMeta) {
+        themeMeta.setAttribute("content", theme.main);
+    }
+
+    document.body.style.backgroundColor = theme.light;
+    introScreen.style.backgroundColor = theme.light;
+}
+
+function applyPersonalisation(name, themeKey, fontKey = "patrick", save = true) {
+    const safeName = String(name || "").trim().slice(0, 30) || "Beautiful soul";
+    const validTheme = pastelThemes[themeKey] ? themeKey : "pink";
+
+    applyColour(validTheme);
+    const validFont = siteFonts[fontKey] ? fontKey : "patrick";
+    applyFont(validFont);
+
+    if (sidebarName) {
+        sidebarName.textContent = safeName + " ♡";
+    }
+
+    if (save) {
+        try {
+            localStorage.setItem("betteryouName", safeName);
+            localStorage.setItem("betteryouColour", validTheme);
+            localStorage.setItem("betteryouFont", validFont);
+        } catch (error) {
+            console.warn("BetterYou could not save preferences in this browser.", error);
+        }
+    }
+}
+
+/* Live preview while a colour is selected */
+document.querySelectorAll('input[name="pastel"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+        applyColour(radio.value);
+    });
+});
+
+/* Live preview while a font is selected */
+document.querySelectorAll('input[name="site-font"]').forEach(function (radio) {
+    radio.addEventListener("change", function () { applyFont(radio.value); });
+});
+
+/* Restore the saved setup choices in the form */
+function restoreSavedChoice() {
+    let savedName = "";
+    let savedTheme = "pink";
+    let savedFont = "patrick";
+
+    // Support both theme names from this version and hex colours
+    // saved by an earlier version of BetterYou.
+    const oldHexColours = {
+        "#F7DCE5": "pink",
+        "#E8DDF5": "lavender",
+        "#DDF1E4": "mint",
+        "#DDECF9": "blue",
+        "#FFF0C9": "yellow",
+        "#F9DFD5": "peach",
+        "#E8E8C9": "sage",
+        "#F1DCEB": "mauve"
+    };
+
+    try {
+        savedName = localStorage.getItem("betteryouName") || "";
+        const storedColour = localStorage.getItem("betteryouColour") || "pink";
+        savedFont = localStorage.getItem("betteryouFont") || "patrick";
+        savedTheme = pastelThemes[storedColour]
+            ? storedColour
+            : (oldHexColours[storedColour.toUpperCase()] || "pink");
+    } catch (error) {
+        console.warn("BetterYou could not read saved preferences in this browser.", error);
+    }
+
+    if (!pastelThemes[savedTheme]) {
+        savedTheme = "pink";
+    }
+
+    if (savedName) {
+        nameInput.value = savedName;
+    }
+
+    const savedRadio = document.querySelector(
+        'input[name="pastel"][value="' + savedTheme + '"]'
+    );
+
+    if (savedRadio) {
+        savedRadio.checked = true;
+    }
+
+    const savedFontRadio = document.querySelector(
+        'input[name="site-font"][value="' + (siteFonts[savedFont] ? savedFont : "patrick") + '"]'
+    );
+    if (savedFontRadio) savedFontRadio.checked = true;
+
+    applyColour(savedTheme);
+    applyFont(savedFont);
+
+    return { name: savedName, theme: savedTheme, font: savedFont };
+}
+
+const savedPreferences = restoreSavedChoice();
+
+/* Let the user reopen personalisation any time from the main website. */
+const changePersonalisationButton = document.getElementById("change-personalisation");
+if (changePersonalisationButton) {
+    changePersonalisationButton.addEventListener("click", function () {
+        restoreSavedChoice();
+        mainContent.hidden = true;
+        setupScreen.hidden = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        nameInput.focus({ preventScroll: true });
+    });
+}
+
+setupForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const name = nameInput.value.trim();
+    const selectedRadio = document.querySelector('input[name="pastel"]:checked');
+
+    if (!name || !selectedRadio) {
+        return;
+    }
+
+    const selectedFont = document.querySelector('input[name="site-font"]:checked');
+    applyPersonalisation(name, selectedRadio.value, selectedFont ? selectedFont.value : "patrick", true);
+    setupScreen.hidden = true;
+    mainContent.hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+/* Intro flow: show setup for new visitors, otherwise open the saved app */
+window.addEventListener("DOMContentLoaded", function () {
+    if (savedPreferences.name) {
+        applyPersonalisation(savedPreferences.name, savedPreferences.theme, savedPreferences.font, false);
+        setupScreen.hidden = true;
+        mainContent.hidden = false;
+    } else {
+        setupScreen.hidden = false;
+        mainContent.hidden = true;
+    }
+
+    window.setTimeout(function () {
+        introScreen.classList.add("intro-exit");
+        document.body.classList.remove("intro-active");
+        document.body.classList.add("site-revealed");
+    }, 1400);
+});
+
+/* =================================
+   CALORIE CALCULATOR
+================================= */
+const BLUEBERRY_KJ_PER_100G = 240;
+
+const initialIngredients = [
+    { name: "Yoghurt", kj: "", grams: "150" },
+    { name: "Honey", kj: "", grams: "10" },
+    {
+        name: "Blueberries",
+        kj: String(BLUEBERRY_KJ_PER_100G),
+        grams: "50"
+    }
+];
+
+const ingredientList = document.getElementById("ingredient-list");
+const totalKcalDisplay = document.getElementById("total-kcal");
+const totalKjDisplay = document.getElementById("total-kj");
+
+function createIngredient(name = "", kj = "", grams = "") {
+    const row = document.createElement("div");
+    row.className = "ingredient";
+
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.className = "ingredient-name";
+    nameInput.placeholder = "Food name";
+    nameInput.setAttribute("aria-label", "Ingredient name");
+    nameInput.value = name;
+
+    const kjInput = document.createElement("input");
+    kjInput.type = "number";
+    kjInput.className = "kj-input";
+    kjInput.placeholder = "kJ";
+    kjInput.min = "0";
+    kjInput.max = "100000";
+    kjInput.step = "any";
+    kjInput.setAttribute("aria-label", "Kilojoules per 100 grams");
+    kjInput.value = kj;
+
+    const gramsInput = document.createElement("input");
+    gramsInput.type = "number";
+    gramsInput.className = "grams";
+    gramsInput.placeholder = "g";
+    gramsInput.min = "0";
+    gramsInput.max = "100000";
+    gramsInput.step = "any";
+    gramsInput.setAttribute("aria-label", "Ingredient amount in grams");
+    gramsInput.value = grams;
+
+    const caloriesDisplay = document.createElement("span");
+    caloriesDisplay.className = "ingredient-calories";
+    caloriesDisplay.textContent = "0.0";
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "remove-btn";
+    removeButton.textContent = "×";
+    removeButton.setAttribute("aria-label", "Remove ingredient");
+
+    function updateBlueberryRule() {
+        const isBlueberry = nameInput.value.trim().toLowerCase() === "blueberries";
+
+        if (isBlueberry) {
+            kjInput.value = String(BLUEBERRY_KJ_PER_100G);
+            kjInput.readOnly = true;
+            kjInput.title = "Fixed value: 240 kJ per 100 g";
+        } else {
+            kjInput.readOnly = false;
+            kjInput.title = "";
+        }
+
+        calculateCalories();
+    }
+
+    nameInput.addEventListener("input", updateBlueberryRule);
+    kjInput.addEventListener("input", calculateCalories);
+    gramsInput.addEventListener("input", calculateCalories);
+
+    removeButton.addEventListener("click", function () {
+        row.remove();
+        calculateCalories();
+    });
+
+    row.append(nameInput, kjInput, gramsInput, caloriesDisplay, removeButton);
+    ingredientList.appendChild(row);
+    updateBlueberryRule();
+}
+
+function calculateCalories() {
+    let totalKcal = 0;
+    const rows = document.querySelectorAll(".ingredient");
+
+    rows.forEach(function (row) {
+        const nameField = row.querySelector(".ingredient-name");
+        const kjField = row.querySelector(".kj-input");
+        const gramsField = row.querySelector(".grams");
+        const caloriesDisplay = row.querySelector(".ingredient-calories");
+
+        const isBlueberry = nameField.value.trim().toLowerCase() === "blueberries";
+        let kjPer100g = Number(kjField.value);
+
+        if (isBlueberry) {
+            kjPer100g = BLUEBERRY_KJ_PER_100G;
+            kjField.value = String(BLUEBERRY_KJ_PER_100G);
+        }
+
+        const grams = Number(gramsField.value);
+        const validKj = kjField.value.trim() !== "" &&
+            Number.isFinite(kjPer100g) && kjPer100g >= 0 && kjPer100g <= 100000;
+        const validGrams = gramsField.value.trim() !== "" &&
+            Number.isFinite(grams) && grams >= 0 && grams <= 100000;
+
+        let ingredientKcal = 0;
+
+        if (validKj && validGrams) {
+            ingredientKcal = (kjPer100g / 4.184) * (grams / 100);
+        }
+
+        caloriesDisplay.textContent = ingredientKcal.toFixed(1);
+        totalKcal += ingredientKcal;
+    });
+
+    totalKcalDisplay.textContent = totalKcal.toFixed(1);
+    totalKjDisplay.textContent = (totalKcal * 4.184).toFixed(1);
+}
+
+document.getElementById("add-btn").addEventListener("click", function () {
+    createIngredient();
+});
+
+document.getElementById("reset-btn").addEventListener("click", function () {
+    ingredientList.innerHTML = "";
+    initialIngredients.forEach(function (ingredient) {
+        createIngredient(ingredient.name, ingredient.kj, ingredient.grams);
+    });
+    calculateCalories();
+});
+
+initialIngredients.forEach(function (ingredient) {
+    createIngredient(ingredient.name, ingredient.kj, ingredient.grams);
+});
+</script>
+</body>
+</html>
