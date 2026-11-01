@@ -226,7 +226,7 @@ function promptAddChapter() {
 
 
 /* ==========================================
-   CHARACTER CARDS & MULTI-BOX PROFILE ZOOM
+   CHARACTER CARDS & PROFILES
    ========================================== */
 
 function renderCharacterCards() {
@@ -287,22 +287,22 @@ function openCharacterProfile(charId) {
     <div class="profile-grid-boxes">
       <div class="bio-box-card box-rose">
         <label>Backstory</label>
-        <textarea id="bio-backstory-${char.id}" class="bio-textarea" placeholder="Origin, history...">${escapeHTML(char.backstory || '')}</textarea>
+        <textarea id="bio-backstory-${char.id}" class="bio-textarea">${escapeHTML(char.backstory || '')}</textarea>
       </div>
 
       <div class="bio-box-card box-amber">
         <label>Traits</label>
-        <textarea id="bio-traits-${char.id}" class="bio-textarea" placeholder="Personality, habits...">${escapeHTML(char.traits || '')}</textarea>
+        <textarea id="bio-traits-${char.id}" class="bio-textarea">${escapeHTML(char.traits || '')}</textarea>
       </div>
 
       <div class="bio-box-card box-indigo">
         <label>Secrets</label>
-        <textarea id="bio-secrets-${char.id}" class="bio-textarea" placeholder="Hidden motivations...">${escapeHTML(char.secrets || '')}</textarea>
+        <textarea id="bio-secrets-${char.id}" class="bio-textarea">${escapeHTML(char.secrets || '')}</textarea>
       </div>
 
       <div class="bio-box-card box-emerald">
         <label>Motivations</label>
-        <textarea id="bio-motivations-${char.id}" class="bio-textarea" placeholder="Goals, desires...">${escapeHTML(char.motivations || '')}</textarea>
+        <textarea id="bio-motivations-${char.id}" class="bio-textarea">${escapeHTML(char.motivations || '')}</textarea>
       </div>
     </div>
 
@@ -367,7 +367,7 @@ function setActivePOV(povId) {
 
 
 /* ==========================================
-   EDITOR & PAGE TURNING
+   EDITOR & 3D PAGE FLIP NAVIGATION
    ========================================== */
 
 function setupEditorListeners() {
@@ -400,7 +400,6 @@ function loadCurrentPage() {
   document.documentElement.style.setProperty("--active-accent", char.color);
   document.documentElement.style.setProperty("--active-font", char.font);
 
-  // Update Corner Portrait & Badges
   const frame = document.getElementById("portrait-frame");
   const nameLabel = document.getElementById("portrait-name");
   const badge = document.getElementById("current-page-pov");
@@ -416,7 +415,6 @@ function loadCurrentPage() {
     badge.style.background = char.color;
   }
 
-  // Set font selector dropdown to character's saved font
   const fontPicker = document.getElementById("active-font-picker");
   if (fontPicker) {
     fontPicker.value = char.font;
@@ -433,24 +431,26 @@ function switchPage(pageId) {
   if (page) {
     appState.activePOV = page.pov;
   }
+
+  const pageCard = document.getElementById("page-card");
+  if (pageCard) pageCard.classList.remove("flipped");
+
   loadCurrentPage();
   renderPageTree();
 }
 
-function turnPage() {
+function nextPage() {
   saveCurrentPageContent();
-  const sheet = document.getElementById("notepad-sheet-anim");
-  if (sheet) sheet.classList.add("page-turn-anim");
+  const currentChap = getCurrentChapter();
+  const currentPageIndex = currentChap.pages.findIndex(p => p.id === appState.activePageId);
+
+  const pageCard = document.getElementById("page-card");
+  if (pageCard) pageCard.classList.add("flipped");
 
   setTimeout(() => {
-    const currentChap = getCurrentChapter();
-    const currentPageIndex = currentChap.pages.findIndex(p => p.id === appState.activePageId);
-
     if (currentPageIndex < currentChap.pages.length - 1) {
-      // Next page in current chapter
       appState.activePageId = currentChap.pages[currentPageIndex + 1].id;
     } else {
-      // Add new page to chapter
       const newPageId = createId();
       currentChap.pages.push({
         id: newPageId,
@@ -463,8 +463,26 @@ function turnPage() {
     loadCurrentPage();
     renderPageTree();
 
-    if (sheet) sheet.classList.remove("page-turn-anim");
-  }, 300);
+    if (pageCard) pageCard.classList.remove("flipped");
+  }, 400);
+}
+
+function previousPage() {
+  saveCurrentPageContent();
+  const currentChap = getCurrentChapter();
+  const currentPageIndex = currentChap.pages.findIndex(p => p.id === appState.activePageId);
+
+  if (currentPageIndex > 0) {
+    const pageCard = document.getElementById("page-card");
+    if (pageCard) pageCard.classList.add("flipped");
+
+    setTimeout(() => {
+      appState.activePageId = currentChap.pages[currentPageIndex - 1].id;
+      loadCurrentPage();
+      renderPageTree();
+      if (pageCard) pageCard.classList.remove("flipped");
+    }, 400);
+  }
 }
 
 function updateWordCount() {
@@ -537,12 +555,10 @@ function generatePerspectiveFields() {
   count = Math.min(Math.max(count, 1), MAX_PERSPECTIVES);
 
   container.innerHTML = "";
-
   const defaultColors = ["#d97706", "#7c3aed", "#2563eb", "#059669", "#dc2626", "#db2777"];
 
   for (let i = 0; i < count; i++) {
     const existing = appState.characters[i] || {};
-    const charId = existing.id || `p${i + 1}`;
     const name = existing.name || `Character ${i + 1}`;
     const color = existing.color || defaultColors[i % defaultColors.length];
     const font = existing.font || "'EB Garamond', serif";
