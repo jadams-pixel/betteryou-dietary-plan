@@ -89,7 +89,7 @@ body {
 }
 
 /* =========================
-   MAIN APP
+   MAIN APP & 3D BOOK STYLING
 ========================= */
 
 .app-layout {
@@ -400,7 +400,6 @@ body {
   outline: 1px solid #fff;
 }
 
-/* Colorful Themes for Bio Boxes */
 .box-rose { background: rgba(225, 29, 72, 0.12); border-left: 3px solid #e11d48; }
 .box-rose label { color: #fb7185; }
 
@@ -493,13 +492,115 @@ body {
   color: #ef4444 !important;
 }
 
-.btn-danger:active {
-  background: rgba(239, 68, 68, 0.15) !important;
+/* =========================
+   3D BOOK PAGE TURN ANIMATION SYSTEM
+========================= */
+
+.notepad-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.book-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  perspective: 2000px;
+  overflow: hidden;
+}
+
+.book {
+  width: 100%;
+  max-width: 850px;
+  height: 100%;
+  max-height: 650px;
+  position: relative;
+  perspective: 2000px;
+}
+
+.page {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.page.flipped {
+  transform: rotateY(-180deg);
+}
+
+.front, .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  box-sizing: border-box;
+  background: var(--bg-notepad);
+  color: var(--text-sheet);
+  border: 1px solid var(--line-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.front {
+  z-index: 2;
+}
+
+.back {
+  transform: rotateY(180deg);
+  background: #eee0c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  z-index: 1;
+}
+
+.back-cover-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: #42352a;
+  margin-bottom: 10px;
+}
+
+.back-cover-content p {
+  color: #7a6a58;
+  font-size: 15px;
 }
 
 /* =========================
-   CORNER PORTRAIT BOX
+   NOTEPAD SHEET & EDITOR
 ========================= */
+
+.notepad-sheet {
+  flex: 1;
+  padding: 1.2rem 1.5rem 4rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-y: auto;
+  position: relative;
+}
+
+.notepad-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line-color);
+  margin-bottom: 0.5rem;
+  gap: 0.5rem;
+}
 
 .header-left-group {
   display: flex;
@@ -517,17 +618,15 @@ body {
 }
 
 .portrait-frame {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
   border: 2px solid var(--active-accent);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   background: #191613;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.3s ease;
 }
 
 .portrait-frame img {
@@ -540,7 +639,7 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 0;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
 .portrait-name {
@@ -552,60 +651,6 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: center;
-}
-
-/* =========================
-   NOTEPAD WORKSPACE & ANIMATION
-========================= */
-
-.notepad-workspace {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.notepad-container {
-  flex: 1;
-  background: var(--bg-notepad);
-  color: var(--text-sheet);
-  display: flex;
-  overflow-y: auto;
-  position: relative;
-  min-height: 0;
-}
-
-.notepad-binder-margin {
-  width: 30px;
-  min-width: 30px;
-  border-right: 1.5px solid #f87171;
-}
-
-.notepad-sheet {
-  flex: 1;
-  padding: 1rem 1.2rem 4rem 1.2rem;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  transition: transform 0.35s ease, opacity 0.35s ease;
-}
-
-/* Page Turn Animation Class */
-.notepad-sheet.page-turn-anim {
-  transform: translateY(25px) scale(0.98);
-  opacity: 0.2;
-}
-
-.notepad-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--line-color);
-  margin-bottom: 0.5rem;
-  gap: 0.5rem;
 }
 
 .pov-badge {
@@ -621,10 +666,10 @@ body {
   white-space: nowrap;
 }
 
-/* Floating Convenient Formatting Toolbar */
+/* Floating Formatting Toolbar */
 .floating-formatting-toolbar {
   position: sticky;
-  bottom: 15px;
+  bottom: 10px;
   align-self: center;
   background: #201c18;
   border: 1px solid var(--border-color);
@@ -645,8 +690,8 @@ body {
 .tool-btn {
   background: #2e2822;
   border: 1px solid var(--border-color);
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   font-size: 0.8rem;
   color: #f3efe6;
@@ -654,10 +699,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.tool-btn:active {
-  background: #443c34;
 }
 
 .font-picker-dropdown {
@@ -682,10 +723,9 @@ body {
     var(--line-color) 2rem,
     var(--line-color) 2.1rem
   );
-  min-height: 350px;
+  min-height: 300px;
   overflow-wrap: break-word;
-  word-break: normal;
-  padding-bottom: 3rem;
+  padding-bottom: 2rem;
 }
 
 #editor p {
@@ -707,11 +747,11 @@ body {
 }
 
 /* =========================
-   FOOTER
+   FOOTER & CONTROLS
 ========================= */
 
 .notepad-footer {
-  min-height: 48px;
+  min-height: 52px;
   background: #12100e;
   border-top: 1px solid var(--border-color);
   display: flex;
@@ -719,6 +759,7 @@ body {
   justify-content: space-between;
   padding: 0 1rem;
   gap: 0.5rem;
+  z-index: 20;
 }
 
 .stats-group {
@@ -726,19 +767,26 @@ body {
   color: var(--text-muted);
   display: flex;
   gap: 0.4rem;
-  flex-wrap: wrap;
+}
+
+.controls-group {
+  display: flex;
+  gap: 10px;
 }
 
 .btn-turn-page {
   background: var(--active-accent);
   color: #fff;
   border: none;
-  padding: 0.5rem 0.9rem;
+  padding: 0.5rem 1rem;
   border-radius: 16px;
   font-size: 0.8rem;
   font-weight: bold;
   cursor: pointer;
-  flex-shrink: 0;
+}
+
+.btn-prev-page {
+  background: #383129;
 }
 
 /* =========================
@@ -768,9 +816,7 @@ body {
   width: 100%;
   max-width: 520px;
   max-height: 90vh;
-  max-height: 90dvh;
   overflow-y: auto;
-  scrollbar-width: thin;
 }
 
 .modal-box h2 {
@@ -785,10 +831,6 @@ body {
   color: var(--text-muted);
   margin-bottom: 1rem;
 }
-
-/* =========================
-   STORY SETUP FORM
-========================= */
 
 .form-group {
   margin-bottom: 0.8rem;
@@ -813,33 +855,12 @@ body {
   min-height: 40px;
 }
 
-.form-group input:focus,
-.font-select:focus {
-  outline: 1px solid var(--active-accent);
-  border-color: var(--active-accent);
-}
-
-.form-group input[type="color"] {
-  height: 42px;
-  padding: 3px;
-  cursor: pointer;
-}
-
-.file-input {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
 .setup-hint {
   display: block;
   color: var(--text-muted);
   font-size: 0.7rem;
   line-height: 1.5;
   margin: 0.4rem 0 0.7rem;
-}
-
-.setup-box {
-  max-width: 600px;
 }
 
 .setup-grid {
@@ -854,7 +875,6 @@ body {
   padding: 0.75rem;
   border-radius: 6px;
   border-top: 3px solid var(--character-color, var(--border-color));
-  min-width: 0;
 }
 
 .config-col h3 {
@@ -863,14 +883,6 @@ body {
   margin-bottom: 0.7rem;
   color: var(--character-color, #fff);
 }
-
-.config-col .form-group {
-  margin-bottom: 0.7rem;
-}
-
-/* =========================
-   BUTTONS
-========================= */
 
 .btn {
   padding: 0.55rem 0.8rem;
@@ -892,109 +904,14 @@ body {
   color: #eee;
 }
 
-.btn-outline:active {
-  background: #30271f;
-}
-
-.btn-sm {
-  padding: 0.35rem 0.55rem;
-  font-size: 0.7rem;
-  background: #2c251e;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
 }
 
-/* =========================
-   RESPONSIVE DESIGN
-========================= */
-
 @media (max-width: 480px) {
-  .app-header {
-    padding: 0 0.5rem;
-  }
-
-  .header-left {
-    gap: 0.3rem;
-  }
-
-  .header-left h1 {
-    font-size: 0.85rem;
-    max-width: 125px;
-  }
-
-  .header-right {
-    max-width: 58%;
-  }
-
-  .pov-pill-btn {
-    padding: 0.35rem 0.55rem;
-    font-size: 0.68rem;
-  }
-
-  .notepad-sheet {
-    padding: 0.8rem 0.7rem 4rem 0.7rem;
-  }
-
-  .notepad-binder-margin {
-    width: 23px;
-    min-width: 23px;
-  }
-
   .setup-grid {
     grid-template-columns: 1fr;
-  }
-
-  .notepad-footer {
-    padding: 0 0.6rem;
-  }
-
-  .stats-group {
-    font-size: 0.65rem;
-  }
-
-  .btn-turn-page {
-    padding: 0.45rem 0.65rem;
-    font-size: 0.7rem;
-  }
-
-  .profile-grid-boxes {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (min-width: 700px) {
-  .sidebar-drawer {
-    width: 320px;
-  }
-
-  .setup-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .notepad-sheet {
-    padding: 1.5rem 2rem 4rem 2rem;
-  }
-
-  #editor {
-    font-size: 1.3rem;
-  }
-}
-
-@media (max-height: 600px) {
-  .modal-box {
-    max-height: 95vh;
-    max-height: 95dvh;
-  }
-
-  .character-cards-container {
-    max-height: 25vh;
   }
 }
