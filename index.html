@@ -18,148 +18,83 @@
   <!-- OPENING SCREEN -->
   <div class="opening-screen" id="opening-screen">
     <div class="opening-card">
-
       <div class="vintage-seal">✒️</div>
-
       <h1>Perspective Writer</h1>
-
       <p>Create your story. Choose your characters. Tell it from every perspective.</p>
-
       <button class="btn-create-story" onclick="openSetupModal('new')">
         <span class="plus-icon">+</span>
         Create New Story
       </button>
-
     </div>
   </div>
-
 
   <!-- MAIN APPLICATION -->
   <div class="app-layout" id="app-layout" style="display:none;">
 
     <!-- SIDEBAR OVERLAY -->
-    <div
-      class="sidebar-overlay"
-      id="sidebar-overlay"
-      onclick="toggleSidebar()">
-    </div>
-
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
     <!-- SIDEBAR -->
     <aside class="sidebar-drawer" id="sidebar-drawer">
-
       <div class="drawer-header">
         <h2>Story & Characters</h2>
-
         <button class="icon-btn" onclick="toggleSidebar()">✕</button>
       </div>
 
-
       <!-- ACTIVE PERSPECTIVES & PROFILES -->
       <div class="sidebar-section">
-
         <h3>Characters & Profiles</h3>
-
-        <div
-          class="character-cards-container"
-          id="active-perspectives-container">
-        </div>
-
+        <div class="character-cards-container" id="active-perspectives-container"></div>
       </div>
-
 
       <!-- CHAPTER OUTLINE -->
       <div class="sidebar-section">
-
         <div class="outline-header">
           <h3>Outline</h3>
         </div>
 
-        <!-- CHAPTER AND PAGE LIST -->
         <div class="page-tree" id="page-tree"></div>
 
-        <!-- + CHAPTER BUTTON -->
         <div class="chapter-add-container">
-          <button class="btn-sm full-width-btn" onclick="promptAddChapter()">
+          <button class="btn-sm full-width-btn btn" onclick="promptAddChapter()">
             + Add New Chapter
           </button>
         </div>
-
       </div>
-
 
       <!-- SIDEBAR FOOTER -->
       <div class="sidebar-footer">
-
-        <button
-          class="btn btn-outline full-width"
-          onclick="openSetupModal('edit')">
+        <button class="btn btn-outline full-width" onclick="openSetupModal('edit')">
           ⚙️ Story Settings
         </button>
-
-        <button
-          class="btn btn-outline full-width"
-          onclick="exportManuscript()">
+        <button class="btn btn-outline full-width" onclick="exportManuscript()">
           📜 Export Story
         </button>
-
-        <button
-          class="btn btn-outline full-width btn-danger"
-          onclick="resetApp()">
+        <button class="btn btn-outline full-width btn-danger" onclick="resetApp()">
           Reset App
         </button>
-
       </div>
-
     </aside>
-
 
     <!-- TOP NAVIGATION -->
     <header class="app-header">
-
       <div class="header-left">
-
-        <button
-          class="icon-btn"
-          onclick="toggleSidebar()"
-          title="Open Sidebar">
-
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2">
-
+        <button class="icon-btn" onclick="toggleSidebar()" title="Open Sidebar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 12h18M3 6h18M3 18h18"/>
-
           </svg>
-
         </button>
-
         <h1 id="header-story-title">Untitled Story</h1>
-
       </div>
-
 
       <!-- DYNAMIC POV SWITCHER -->
       <div class="header-right">
-
-        <div
-          class="pov-toggle-pill"
-          id="pov-switcher">
-
-        </div>
-
+        <div class="pov-toggle-pill" id="pov-switcher"></div>
       </div>
-
     </header>
-
 
     <!-- WRITING WORKSPACE WITH 3D BOOK SPINE CONTAINER -->
     <main class="notepad-workspace">
-
       <div class="book-container">
         <div class="book" id="book-element">
           <div class="page" id="page-card">
@@ -209,7 +144,7 @@
             <div class="back">
               <div class="back-cover-content">
                 <h2 id="back-page-title">Turning Page...</h2>
-                <p>Continuing your story chapter...</p>
+                <p id="back-page-subtitle">Continuing your story chapter...</p>
               </div>
             </div>
 
@@ -217,10 +152,8 @@
         </div>
       </div>
 
-
       <!-- BOTTOM BAR WITH NAVIGATION -->
       <footer class="notepad-footer">
-
         <div class="stats-group">
           <span id="stat-words">0 words</span>
           <span>•</span>
@@ -235,24 +168,19 @@
             Turn Page ➔
           </button>
         </div>
-
       </footer>
-
     </main>
-
   </div>
-
 
   <!-- CHARACTER PROFILE ZOOM MODAL -->
   <div class="modal-backdrop" id="modal-profile">
     <div class="modal-box profile-box" id="profile-modal-content"></div>
   </div>
 
-
   <!-- STORY SETUP MODAL -->
   <div class="modal-backdrop" id="modal-setup">
     <div class="modal-box setup-box">
-      <h2>Story Setup</h2>
+      <h2 id="setup-modal-title">Story Setup</h2>
       <p class="modal-sub">Create your story and decide how many characters it will have.</p>
 
       <form id="setup-form" onsubmit="saveSetup(event)">
@@ -276,7 +204,6 @@
       </form>
     </div>
   </div>
-
 
   <!-- JAVASCRIPT -->
   <script src="script.js"></script>
