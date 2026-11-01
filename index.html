@@ -157,87 +157,84 @@
     </header>
 
 
-    <!-- WRITING WORKSPACE -->
+    <!-- WRITING WORKSPACE WITH 3D BOOK SPINE CONTAINER -->
     <main class="notepad-workspace">
 
-      <div class="notepad-container">
+      <div class="book-container">
+        <div class="book" id="book-element">
+          <div class="page" id="page-card">
+            
+            <!-- FRONT OF PAGE (ACTIVE EDITOR) -->
+            <div class="front">
+              <div class="notepad-sheet">
 
-        <div class="notepad-binder-margin"></div>
+                <div class="notepad-header-row">
+                  <div class="header-left-group">
+                    <div class="notepad-portrait-box" id="notepad-portrait-box">
+                      <div class="portrait-frame" id="portrait-frame"></div>
+                      <span class="portrait-name" id="portrait-name">Character</span>
+                    </div>
+                    <span class="badge pov-badge" id="current-page-pov">Character POV</span>
+                  </div>
+                </div>
 
-        <div class="notepad-sheet" id="notepad-sheet-anim">
+                <div
+                  id="editor"
+                  contenteditable="true"
+                  spellcheck="true"
+                  placeholder="Tap here to begin writing your story...">
+                </div>
 
+                <div class="floating-formatting-toolbar">
+                  <div class="tool-group">
+                    <button class="tool-btn" onclick="formatText('bold')" title="Bold"><b>B</b></button>
+                    <button class="tool-btn" onclick="formatText('italic')" title="Italic"><i>I</i></button>
+                    <button class="tool-btn" onclick="insertQuote()" title="Blockquote">“”</button>
+                  </div>
+                  <div class="font-selector-group">
+                    <select id="active-font-picker" class="font-picker-dropdown" onchange="changeActiveCharacterFont(this.value)" title="Change Font">
+                      <option value="'EB Garamond', serif">Garamond</option>
+                      <option value="'Playfair Display', serif">Playfair</option>
+                      <option value="'Courier Prime', monospace">Typewriter</option>
+                      <option value="'Caveat', cursive">Handwritten</option>
+                      <option value="'Inter', sans-serif">Modern Sans</option>
+                    </select>
+                  </div>
+                </div>
 
-          <!-- EDITOR HEADER -->
-          <div class="notepad-header-row">
-
-            <div class="header-left-group">
-              <!-- CORNER PORTRAIT BOX -->
-              <div class="notepad-portrait-box" id="notepad-portrait-box">
-                <div class="portrait-frame" id="portrait-frame"></div>
-                <span class="portrait-name" id="portrait-name">Character</span>
               </div>
+            </div>
 
-              <span
-                class="badge pov-badge"
-                id="current-page-pov">
-                Character POV
-              </span>
+            <!-- BACK OF PAGE (TRANSITION DISPLAY) -->
+            <div class="back">
+              <div class="back-cover-content">
+                <h2 id="back-page-title">Turning Page...</h2>
+                <p>Continuing your story chapter...</p>
+              </div>
             </div>
 
           </div>
-
-
-          <!-- STORY EDITOR -->
-          <div
-            id="editor"
-            contenteditable="true"
-            spellcheck="true"
-            placeholder="Tap here to begin writing your story...">
-          </div>
-
-
-          <!-- FLOATING CONVENIENT FORMATTING TOOLBAR -->
-          <div class="floating-formatting-toolbar">
-            <div class="tool-group">
-              <button class="tool-btn" onclick="formatText('bold')" title="Bold"><b>B</b></button>
-              <button class="tool-btn" onclick="formatText('italic')" title="Italic"><i>I</i></button>
-              <button class="tool-btn" onclick="insertQuote()" title="Blockquote">“”</button>
-            </div>
-            <div class="font-selector-group">
-              <select id="active-font-picker" class="font-picker-dropdown" onchange="changeActiveCharacterFont(this.value)" title="Change Font">
-                <option value="'EB Garamond', serif">Garamond</option>
-                <option value="'Playfair Display', serif">Playfair</option>
-                <option value="'Courier Prime', monospace">Typewriter</option>
-                <option value="'Caveat', cursive">Handwritten</option>
-                <option value="'Inter', sans-serif">Modern Sans</option>
-              </select>
-            </div>
-          </div>
-
         </div>
-
       </div>
 
 
-      <!-- BOTTOM BAR -->
+      <!-- BOTTOM BAR WITH NAVIGATION -->
       <footer class="notepad-footer">
 
         <div class="stats-group">
-
           <span id="stat-words">0 words</span>
-
           <span>•</span>
-
           <span id="stat-read">0 min read</span>
-
         </div>
 
-
-        <button
-          class="btn-turn-page"
-          onclick="turnPage()">
-          Turn Page ➔
-        </button>
+        <div class="controls-group">
+          <button class="btn-turn-page btn-prev-page" onclick="previousPage()">
+            ◀ Previous Page
+          </button>
+          <button class="btn-turn-page" onclick="nextPage()">
+            Turn Page ➔
+          </button>
+        </div>
 
       </footer>
 
@@ -246,109 +243,39 @@
   </div>
 
 
-
   <!-- CHARACTER PROFILE ZOOM MODAL -->
   <div class="modal-backdrop" id="modal-profile">
-    <div class="modal-box profile-box" id="profile-modal-content">
-      <!-- Injected dynamically via JS -->
-    </div>
+    <div class="modal-box profile-box" id="profile-modal-content"></div>
   </div>
-
 
 
   <!-- STORY SETUP MODAL -->
   <div class="modal-backdrop" id="modal-setup">
-
     <div class="modal-box setup-box">
-
       <h2>Story Setup</h2>
-
-      <p class="modal-sub">
-        Create your story and decide how many characters it will have.
-      </p>
-
+      <p class="modal-sub">Create your story and decide how many characters it will have.</p>
 
       <form id="setup-form" onsubmit="saveSetup(event)">
-
-
-        <!-- STORY TITLE -->
         <div class="form-group">
-
           <label for="setup-title">Story Title</label>
-
-          <input
-            type="text"
-            id="setup-title"
-            value="My New Story"
-            placeholder="Enter your story title"
-            required />
-
+          <input type="text" id="setup-title" value="My New Story" placeholder="Enter your story title" required />
         </div>
 
-
-
-        <!-- NUMBER OF CHARACTERS -->
         <div class="form-group">
-
-          <label for="setup-perspective-count">
-            How many characters will your story have?
-          </label>
-
-          <input
-            type="number"
-            id="setup-perspective-count"
-            min="1"
-            max="20"
-            value="2"
-            oninput="generatePerspectiveFields()"
-            required />
-
-          <small class="setup-hint">
-            Choose between 1 and 20 characters. Profiles generate automatically.
-          </small>
-
+          <label for="setup-perspective-count">How many characters will your story have?</label>
+          <input type="number" id="setup-perspective-count" min="1" max="20" value="2" oninput="generatePerspectiveFields()" required />
+          <small class="setup-hint">Choose between 1 and 20 characters. Profiles generate automatically.</small>
         </div>
 
+        <div class="setup-grid" id="setup-perspectives"></div>
 
-
-        <!-- DYNAMIC CHARACTER CONFIGURATION -->
-        <div
-          class="setup-grid"
-          id="setup-perspectives">
-
-        </div>
-
-
-
-        <!-- SETUP ACTIONS -->
         <div class="modal-actions" style="margin-top:1rem;">
-
-          <button
-            type="button"
-            class="btn btn-outline"
-            onclick="closeModal('modal-setup')">
-
-            Cancel
-
-          </button>
-
-
-          <button
-            type="submit"
-            class="btn btn-primary">
-
-            Open Notepad ➔
-
-          </button>
-
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-setup')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Open Notepad ➔</button>
         </div>
-
       </form>
-
     </div>
-
   </div>
-
 
 
   <!-- JAVASCRIPT -->
