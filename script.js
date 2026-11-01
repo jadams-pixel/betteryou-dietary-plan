@@ -5,6 +5,20 @@
 
 const STORAGE_KEY = "dual_pov_notepad_state";
 const MAX_PERSPECTIVES = 20;
+let isAnimatingPageTurn = false;
+
+const PALETTE = [
+  "#d97706", "#7c3aed", "#2563eb", "#059669",
+  "#dc2626", "#db2777", "#4f46e5", "#0891b2"
+];
+
+const FONTS = [
+  "'EB Garamond', serif",
+  "'Playfair Display', serif",
+  "'Courier Prime', monospace",
+  "'Caveat', cursive",
+  "'Inter', sans-serif"
+];
 
 let appState = {
   isConfigured: false,
@@ -85,6 +99,16 @@ function loadFromStorage() {
   }
 }
 
+function setupEditorListeners() {
+  const editor = getEditor();
+  if (!editor) return;
+
+  editor.addEventListener("input", () => {
+    saveCurrentPageContent();
+    updateStats();
+  });
+}
+
 
 /* ==========================================
    GENERAL HELPERS
@@ -113,6 +137,16 @@ function getCurrentChapter() {
     }
   }
   return appState.chapters[appState.chapters.length - 1];
+}
+
+function getAllPagesFlat() {
+  const pagesList = [];
+  appState.chapters.forEach(chap => {
+    chap.pages.forEach(pg => {
+      pagesList.push({ page: pg, chapter: chap });
+    });
+  });
+  return pagesList;
 }
 
 function getEditor() {
@@ -154,6 +188,119 @@ function resetApp() {
     localStorage.removeItem(STORAGE_KEY);
     location.reload();
   }
+}
+
+
+/* ==========================================
+   STORY SETUP MODAL & CONFIGURATION
+   ========================================== */
+
+function openSetupModal(mode = "new") {
+  const modal = document.getElementById("modal-setup");
+  const titleInput = document.getElementById("setup-title");
+  const countInput = document.getElementById("setup-perspective-count");
+  const modalHeader = document.getElementById("setup-modal-title");
+
+  if (modalHeader) {
+    modalHeader.textContent = mode === "edit" ? "Story Settings" : "Story Setup";
+  }
+
+  titleInput.value = appState.storyTitle;
+  countInput.value = appState.characters.length;
+
+  generatePerspectiveFields();
+  modal.classList.add("open");
+}
+
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.classList.remove("open");
+}
+
+function generatePerspectiveFields() {
+  const container = document.getElementById("setup-perspectives");
+  const count = Math.min(Math.max(parseInt(document.getElementById("setup-perspective-count").value) || 1, 1), MAX_PERSPECTIVES);
+
+  container.innerHTML = "";
+
+  for (let i = 0; i < count; i++) {
+    const existing = appState.characters[i] || {};
+    const charId = existing.id || `p${i + 1}`;
+    const name = existing.name || `Character ${i + 1}`;
+    const color = existing.color || PALETTE[i % PALETTE.length];
+    const font = existing.font || FONTS[i % FONTS.length];
+
+    const col = document.createElement("div");
+    col.className = "config-col";
+    col.style.setProperty("--character-color", color);
+
+    col.innerHTML = `
+      <h3>${name}</h3>
+      <div class="form-group">
+        <label>Character Name</label>
+        <input type="text" class="char-name-input" data-id="${charId}" value="${escapeHTML(name)}" required />
+      </div>
+      <div class="form-group">
+        <label>Theme Color</label>
+        <input type="color" class="char-color-input" data-id="${charId}" value="${color}" />
+      </div>
+      <div class="form-group">
+        <label>Writing Font</label>
+        <select class="font-select char-font-input" data-id="${charId}">
+          <option value="'EB Garamond', serif" ${font.includes("Garamond") ? "selected" : ""}>Garamond</option>
+          <option value="'Playfair Display', serif" ${font.includes("Playfair") ? "selected" : ""}>Playfair</option>
+          <option value="'Courier Prime', monospace" ${font.includes("Courier") ? "selected" : ""}>Typewriter</option>
+          <option value="'Caveat', cursive" ${font.includes("Caveat") ? "selected" : ""}>Handwritten</option>
+          <option value="'Inter', sans-serif" ${font.includes("Inter") ? "selected" : ""}>Modern Sans</option>
+        </select>
+      </div>
+    `;
+
+    container.appendChild(col);
+  }
+}
+
+function saveSetup(e) {
+  e.preventDefault();
+
+  const title = document.getElementById("setup-title").value.trim() || "Untitled Story";
+  const nameInputs = document.querySelectorAll(".char-name-input");
+  const colorInputs = document.querySelectorAll(".char-color-input");
+  const fontInputs = document.querySelectorAll(".char-font-input");
+
+  const newCharacters = [];
+
+  nameInputs.forEach((input, index) => {
+    const id = input.dataset.id;
+    const existing = getCharacter(id);
+
+    newCharacters.push({
+      id: id,
+      name: input.value.trim() || `Character ${index + 1}`,
+      color: colorInputs[index].value,
+      font: fontInputs[index].value,
+      image: existing.image || "",
+      backstory: existing.backstory || "",
+      traits: existing.traits || "",
+      secrets: existing.secrets || "",
+      motivations: existing.motivations || ""
+    });
+  });
+
+  appState.storyTitle = title;
+  appState.characters = newCharacters;
+  appState.isConfigured = true;
+
+  if (!newCharacters.some(c => c.id === appState.activePOV)) {
+    appState.activePOV = newCharacters[0].id;
+  }
+
+  closeModal("modal-setup");
+  showMainApp();
+}
+
+function applySetup() {
+  document.getElementById("header-story-title").textContent = appState.storyTitle;
 }
 
 
@@ -264,6 +411,35 @@ function renderCharacterCards() {
   });
 }
 
+function renderPOVSwitcher() {
+  const container = document.getElementById("pov-switcher");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  appState.characters.forEach(char => {
+    const btn = document.createElement("button");
+    btn.className = "pov-pill-btn" + (char.id === appState.activePOV ? " active" : "");
+    btn.style.setProperty("--character-color", char.color);
+    btn.textContent = char.name;
+    btn.onclick = () => setActivePOV(char.id);
+    container.appendChild(btn);
+  });
+}
+
+function setActivePOV(charId) {
+  appState.activePOV = charId;
+  const currPage = getCurrentPage();
+  if (currPage) {
+    currPage.pov = charId;
+  }
+  renderPOVSwitcher();
+  renderCharacterCards();
+  renderPageTree();
+  loadCurrentPage();
+  saveToStorage();
+}
+
 function openCharacterProfile(charId) {
   const char = getCharacter(charId);
   if (!char) return;
@@ -281,236 +457,170 @@ function openCharacterProfile(charId) {
     <div class="profile-header-center">
       ${avatar}
       <h2>${escapeHTML(char.name)}</h2>
-      <p style="font-size:0.75rem; color:var(--text-muted);">Character Bio & Lore Cards</p>
     </div>
 
     <div class="profile-grid-boxes">
       <div class="bio-box-card box-rose">
         <label>Backstory</label>
-        <textarea id="bio-backstory-${char.id}" class="bio-textarea">${escapeHTML(char.backstory || '')}</textarea>
+        <textarea class="bio-textarea" onchange="updateCharBio('${char.id}', 'backstory', this.value)">${escapeHTML(char.backstory)}</textarea>
       </div>
 
       <div class="bio-box-card box-amber">
         <label>Traits</label>
-        <textarea id="bio-traits-${char.id}" class="bio-textarea">${escapeHTML(char.traits || '')}</textarea>
+        <textarea class="bio-textarea" onchange="updateCharBio('${char.id}', 'traits', this.value)">${escapeHTML(char.traits)}</textarea>
       </div>
 
       <div class="bio-box-card box-indigo">
         <label>Secrets</label>
-        <textarea id="bio-secrets-${char.id}" class="bio-textarea">${escapeHTML(char.secrets || '')}</textarea>
+        <textarea class="bio-textarea" onchange="updateCharBio('${char.id}', 'secrets', this.value)">${escapeHTML(char.secrets)}</textarea>
       </div>
 
       <div class="bio-box-card box-emerald">
         <label>Motivations</label>
-        <textarea id="bio-motivations-${char.id}" class="bio-textarea">${escapeHTML(char.motivations || '')}</textarea>
+        <textarea class="bio-textarea" onchange="updateCharBio('${char.id}', 'motivations', this.value)">${escapeHTML(char.motivations)}</textarea>
       </div>
     </div>
 
-    <div class="modal-actions" style="margin-top: 1rem;">
-      <button class="btn btn-primary" onclick="saveCharacterBio('${char.id}')">Save & Close</button>
+    <div class="modal-actions" style="margin-top:1.2rem;">
+      <button class="btn btn-outline" onclick="closeModal('modal-profile')">Close</button>
     </div>
   `;
 
   document.getElementById("modal-profile").classList.add("open");
 }
 
-function saveCharacterBio(charId) {
+function updateCharBio(charId, field, value) {
   const char = getCharacter(charId);
-  if (!char) return;
-
-  char.backstory = document.getElementById(`bio-backstory-${charId}`).value;
-  char.traits = document.getElementById(`bio-traits-${charId}`).value;
-  char.secrets = document.getElementById(`bio-secrets-${charId}`).value;
-  char.motivations = document.getElementById(`bio-motivations-${charId}`).value;
-
-  saveToStorage();
-  closeModal("modal-profile");
+  if (char) {
+    char[field] = value;
+    saveToStorage();
+  }
 }
 
 
 /* ==========================================
-   POV SWITCHING & HEADER
+   3D PAGE FLIP ANIMATION & EDITOR LOGIC
    ========================================== */
-
-function renderPOVSwitcher() {
-  const container = document.getElementById("pov-switcher");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  appState.characters.forEach(char => {
-    const btn = document.createElement("button");
-    btn.className = "pov-pill-btn" + (char.id === appState.activePOV ? " active" : "");
-    btn.style.setProperty("--character-color", char.color);
-    btn.textContent = char.name;
-    btn.onclick = () => setActivePOV(char.id);
-    container.appendChild(btn);
-  });
-}
-
-function setActivePOV(povId) {
-  saveCurrentPageContent();
-  appState.activePOV = povId;
-
-  const page = getCurrentPage();
-  if (page) {
-    page.pov = povId;
-  }
-
-  applySetup();
-  renderPOVSwitcher();
-  renderCharacterCards();
-  renderPageTree();
-  loadCurrentPage();
-  saveToStorage();
-}
-
-
-/* ==========================================
-   EDITOR & 3D PAGE FLIP NAVIGATION
-   ========================================== */
-
-function setupEditorListeners() {
-  const editor = getEditor();
-  if (!editor) return;
-
-  editor.addEventListener("input", () => {
-    updateWordCount();
-  });
-}
-
-function saveCurrentPageContent() {
-  const editor = getEditor();
-  const page = getCurrentPage();
-  if (editor && page) {
-    page.content = editor.innerHTML;
-  }
-}
 
 function loadCurrentPage() {
   const page = getCurrentPage();
   const editor = getEditor();
   if (!page || !editor) return;
 
-  editor.innerHTML = page.content || "<p></p>";
-  appState.activePOV = page.pov;
-
   const char = getCharacter(page.pov);
+
   document.body.setAttribute("data-pov", char.id);
   document.documentElement.style.setProperty("--active-accent", char.color);
   document.documentElement.style.setProperty("--active-font", char.font);
 
-  const frame = document.getElementById("portrait-frame");
-  const nameLabel = document.getElementById("portrait-name");
-  const badge = document.getElementById("current-page-pov");
+  document.getElementById("portrait-frame").innerHTML = char.image
+    ? `<img src="${escapeHTML(char.image)}" alt="">`
+    : `<div class="avatar-placeholder" style="background:${char.color}">${escapeHTML(char.name.substring(0, 2).toUpperCase())}</div>`;
 
-  if (frame) {
-    frame.innerHTML = char.image
-      ? `<img src="${escapeHTML(char.image)}" alt="">`
-      : `<div class="avatar-placeholder">${escapeHTML(char.name.substring(0, 2).toUpperCase())}</div>`;
-  }
-  if (nameLabel) nameLabel.textContent = char.name;
-  if (badge) {
-    badge.textContent = `${char.name} POV`;
-    badge.style.background = char.color;
-  }
+  document.getElementById("portrait-name").textContent = char.name;
+  document.getElementById("current-page-pov").textContent = `${char.name} POV`;
+  document.getElementById("current-page-pov").style.background = char.color;
 
   const fontPicker = document.getElementById("active-font-picker");
   if (fontPicker) {
     fontPicker.value = char.font;
   }
 
-  updateWordCount();
-  renderPOVSwitcher();
+  editor.innerHTML = page.content || "<p></p>";
+  updateStats();
 }
 
-function switchPage(pageId) {
-  saveCurrentPageContent();
-  appState.activePageId = pageId;
+function saveCurrentPageContent() {
   const page = getCurrentPage();
-  if (page) {
-    appState.activePOV = page.pov;
+  const editor = getEditor();
+  if (page && editor) {
+    page.content = editor.innerHTML;
+  }
+}
+
+function animatePageFlip(targetPageId, callback) {
+  if (isAnimatingPageTurn) return;
+  isAnimatingPageTurn = true;
+
+  saveCurrentPageContent();
+
+  const pageCard = document.getElementById("page-card");
+  const backTitle = document.getElementById("back-page-title");
+  const backSubtitle = document.getElementById("back-page-subtitle");
+
+  const targetPageObj = getAllPagesFlat().find(item => item.page.id === targetPageId);
+  if (targetPageObj) {
+    const targetChar = getCharacter(targetPageObj.page.pov);
+    backTitle.textContent = targetPageObj.chapter.title;
+    backSubtitle.textContent = `POV: ${targetChar.name}`;
   }
 
-  const pageCard = document.getElementById("page-card");
-  if (pageCard) pageCard.classList.remove("flipped");
-
-  loadCurrentPage();
-  renderPageTree();
-}
-
-function nextPage() {
-  saveCurrentPageContent();
-  const currentChap = getCurrentChapter();
-  const currentPageIndex = currentChap.pages.findIndex(p => p.id === appState.activePageId);
-
-  const pageCard = document.getElementById("page-card");
-  if (pageCard) pageCard.classList.add("flipped");
+  pageCard.classList.add("flipped");
 
   setTimeout(() => {
-    if (currentPageIndex < currentChap.pages.length - 1) {
-      appState.activePageId = currentChap.pages[currentPageIndex + 1].id;
-    } else {
-      const newPageId = createId();
-      currentChap.pages.push({
-        id: newPageId,
-        pov: appState.activePOV,
-        content: "<p></p>"
-      });
-      appState.activePageId = newPageId;
-    }
-
+    appState.activePageId = targetPageId;
+    if (callback) callback();
     loadCurrentPage();
-    renderPageTree();
+    renderSidebar();
 
-    if (pageCard) pageCard.classList.remove("flipped");
+    setTimeout(() => {
+      pageCard.classList.remove("flipped");
+      isAnimatingPageTurn = false;
+      saveToStorage();
+    }, 150);
   }, 400);
 }
 
-function previousPage() {
-  saveCurrentPageContent();
-  const currentChap = getCurrentChapter();
-  const currentPageIndex = currentChap.pages.findIndex(p => p.id === appState.activePageId);
+function switchPage(pageId) {
+  if (pageId === appState.activePageId) return;
+  animatePageFlip(pageId);
+}
 
-  if (currentPageIndex > 0) {
-    const pageCard = document.getElementById("page-card");
-    if (pageCard) pageCard.classList.add("flipped");
+function nextPage() {
+  const pagesFlat = getAllPagesFlat();
+  const currentIndex = pagesFlat.findIndex(p => p.page.id === appState.activePageId);
 
-    setTimeout(() => {
-      appState.activePageId = currentChap.pages[currentPageIndex - 1].id;
-      loadCurrentPage();
-      renderPageTree();
-      if (pageCard) pageCard.classList.remove("flipped");
-    }, 400);
+  if (currentIndex < pagesFlat.length - 1) {
+    animatePageFlip(pagesFlat[currentIndex + 1].page.id);
+  } else {
+    // Add new page to current chapter
+    const currentChap = getCurrentChapter();
+    const newPageId = createId();
+
+    currentChap.pages.push({
+      id: newPageId,
+      pov: appState.activePOV,
+      content: "<p></p>"
+    });
+
+    animatePageFlip(newPageId);
   }
 }
 
-function updateWordCount() {
-  const editor = getEditor();
-  if (!editor) return;
+function previousPage() {
+  const pagesFlat = getAllPagesFlat();
+  const currentIndex = pagesFlat.findIndex(p => p.page.id === appState.activePageId);
 
-  const text = editor.innerText || "";
-  const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-  const readTime = Math.ceil(words / 200);
-
-  const statWords = document.getElementById("stat-words");
-  const statRead = document.getElementById("stat-read");
-
-  if (statWords) statWords.textContent = `${words} word${words === 1 ? "" : "s"}`;
-  if (statRead) statRead.textContent = `${readTime} min read`;
+  if (currentIndex > 0) {
+    animatePageFlip(pagesFlat[currentIndex - 1].page.id);
+  }
 }
 
 
 /* ==========================================
-   FORMATTING & FONTS
+   FORMATTING & UTILITIES
    ========================================== */
 
 function formatText(command) {
   document.execCommand(command, false, null);
+  getEditor().focus();
+  saveCurrentPageContent();
 }
 
 function insertQuote() {
   document.execCommand("formatBlock", false, "blockquote");
+  getEditor().focus();
+  saveCurrentPageContent();
 }
 
 function changeActiveCharacterFont(fontValue) {
@@ -522,159 +632,43 @@ function changeActiveCharacterFont(fontValue) {
   }
 }
 
+function updateStats() {
+  const editor = getEditor();
+  if (!editor) return;
 
-/* ==========================================
-   STORY SETUP & MODALS
-   ========================================== */
+  const text = editor.innerText.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  const readTime = Math.ceil(words / 200);
 
-function openSetupModal(mode = 'new') {
-  const modal = document.getElementById("modal-setup");
-  if (!modal) return;
-
-  const titleInput = document.getElementById("setup-title");
-  const countInput = document.getElementById("setup-perspective-count");
-
-  if (titleInput) titleInput.value = appState.storyTitle;
-  if (countInput) countInput.value = appState.characters.length;
-
-  generatePerspectiveFields();
-  modal.classList.add("open");
+  document.getElementById("stat-words").textContent = `${words} word${words === 1 ? "" : "s"}`;
+  document.getElementById("stat-read").textContent = `${readTime} min read`;
 }
-
-function closeModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (modal) modal.classList.remove("open");
-}
-
-function generatePerspectiveFields() {
-  const container = document.getElementById("setup-perspectives");
-  const countInput = document.getElementById("setup-perspective-count");
-  if (!container || !countInput) return;
-
-  let count = parseInt(countInput.value) || 1;
-  count = Math.min(Math.max(count, 1), MAX_PERSPECTIVES);
-
-  container.innerHTML = "";
-  const defaultColors = ["#d97706", "#7c3aed", "#2563eb", "#059669", "#dc2626", "#db2777"];
-
-  for (let i = 0; i < count; i++) {
-    const existing = appState.characters[i] || {};
-    const name = existing.name || `Character ${i + 1}`;
-    const color = existing.color || defaultColors[i % defaultColors.length];
-    const font = existing.font || "'EB Garamond', serif";
-
-    const col = document.createElement("div");
-    col.className = "config-col";
-    col.style.setProperty("--character-color", color);
-
-    col.innerHTML = `
-      <h3>Character ${i + 1}</h3>
-
-      <div class="form-group">
-        <label>Name</label>
-        <input type="text" id="setup-name-${i}" value="${escapeHTML(name)}" required />
-      </div>
-
-      <div class="form-group">
-        <label>Accent Color</label>
-        <input type="color" id="setup-color-${i}" value="${color}" />
-      </div>
-
-      <div class="form-group">
-        <label>Default Font</label>
-        <select id="setup-font-${i}" class="font-select">
-          <option value="'EB Garamond', serif" ${font.includes('Garamond') ? 'selected' : ''}>Garamond</option>
-          <option value="'Playfair Display', serif" ${font.includes('Playfair') ? 'selected' : ''}>Playfair</option>
-          <option value="'Courier Prime', monospace" ${font.includes('Courier') ? 'selected' : ''}>Typewriter</option>
-          <option value="'Caveat', cursive" ${font.includes('Caveat') ? 'selected' : ''}>Handwritten</option>
-          <option value="'Inter', sans-serif" ${font.includes('Inter') ? 'selected' : ''}>Modern Sans</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Avatar (URL)</label>
-        <input type="text" id="setup-img-${i}" value="${escapeHTML(existing.image || '')}" placeholder="https://..." />
-      </div>
-    `;
-
-    container.appendChild(col);
-  }
-}
-
-function saveSetup(event) {
-  event.preventDefault();
-
-  const titleInput = document.getElementById("setup-title");
-  const countInput = document.getElementById("setup-perspective-count");
-
-  appState.storyTitle = titleInput ? titleInput.value : appState.storyTitle;
-  const count = parseInt(countInput.value) || appState.characters.length;
-
-  const newCharacters = [];
-
-  for (let i = 0; i < count; i++) {
-    const existing = appState.characters[i] || {};
-    const nameVal = document.getElementById(`setup-name-${i}`).value;
-    const colorVal = document.getElementById(`setup-color-${i}`).value;
-    const fontVal = document.getElementById(`setup-font-${i}`).value;
-    const imgVal = document.getElementById(`setup-img-${i}`).value;
-
-    newCharacters.push({
-      id: existing.id || `p${i + 1}`,
-      name: nameVal || `Character ${i + 1}`,
-      image: imgVal || "",
-      font: fontVal,
-      color: colorVal,
-      backstory: existing.backstory || "",
-      traits: existing.traits || "",
-      secrets: existing.secrets || "",
-      motivations: existing.motivations || ""
-    });
-  }
-
-  appState.characters = newCharacters;
-  appState.isConfigured = true;
-
-  if (!getCharacter(appState.activePOV)) {
-    appState.activePOV = appState.characters[0].id;
-  }
-
-  closeModal("modal-setup");
-  showMainApp();
-}
-
-function applySetup() {
-  const titleHeader = document.getElementById("header-story-title");
-  if (titleHeader) {
-    titleHeader.textContent = appState.storyTitle;
-  }
-}
-
-
-/* ==========================================
-   EXPORT MANUSCRIPT
-   ========================================== */
 
 function exportManuscript() {
   saveCurrentPageContent();
 
-  let textContent = `${appState.storyTitle.toUpperCase()}\n${"=".repeat(appState.storyTitle.length)}\n\n`;
+  let manuscriptText = `${appState.storyTitle.toUpperCase()}\n`;
+  manuscriptText += `==========================================\n\n`;
 
   appState.chapters.forEach(chap => {
-    textContent += `\n--- ${chap.title.toUpperCase()} ---\n\n`;
+    manuscriptText += `\n--- ${chap.title.toUpperCase()} ---\n\n`;
+
     chap.pages.forEach((pg, index) => {
       const char = getCharacter(pg.pov);
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = pg.content;
-      const cleanText = tempDiv.innerText || tempDiv.textContent || "";
+      const plainText = tempDiv.innerText.trim();
 
-      textContent += `[Page ${index + 1} - ${char.name} POV]\n${cleanText}\n\n`;
+      manuscriptText += `[Page ${index + 1} - POV: ${char.name}]\n`;
+      manuscriptText += `${plainText}\n\n`;
     });
   });
 
-  const blob = new Blob([textContent], { type: "text/plain" });
-  const anchor = document.createElement("a");
-  anchor.download = `${appState.storyTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_manuscript.txt`;
-  anchor.href = window.URL.createObjectURL(blob);
-  anchor.click();
+  const blob = new Blob([manuscriptText], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${appState.storyTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_manuscript.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
